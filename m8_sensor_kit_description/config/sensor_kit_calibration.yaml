@@ -1,0 +1,68 @@
+# BMW M8 Sensor Kit Calibration - Real World
+#
+# Defines individual sensor positions relative to sensor_kit_base_link (LiDAR)
+#
+# All positions calculated as: sensor_position - LiDAR_position
+#
+# Absolute positions from rear axle (base_link):
+#   LiDAR:  (1.539, 0.006, 1.041)
+#   Camera: (1.706, -0.016, 0.752)
+#   IMU:    (0.761, 0.048, 0.23)
+#   Radar:  (3.678, -0.005, -0.08)
+
+sensor_kit_base_link:
+
+  # LIDAR SENSOR
+  # Central LiDAR (Ouster OS1-128) - Reference point (sensor_kit_base_link = LiDAR position)
+  ouster_lidar_base_link:
+    x: 0.000000
+    y: 0.000000
+    z: 0.000000
+    roll: 0.000000
+    pitch: 0.000000
+    yaw: 0.000000
+
+  # CAMERA SENSOR
+  # Front Camera (Lucid TRIP28S / innenraum)
+  # Absolute: (1.706, -0.016, 0.752)
+  # Relative to LiDAR: (1.706-1.539, -0.016-0.006, 0.752-1.041)
+  camera_lucid_camera_link:
+    x: 0.167000      # 0.167m forward from LiDAR
+    y: -0.022000     # 0.022m right from LiDAR
+    z: -0.289000     # 0.289m below LiDAR
+    roll: 0.000000
+    pitch: 0.000000
+    yaw: 0.000000
+
+  # GNSS/IMU SENSOR
+  # iNAT M300 (integrated IMU + GNSS unit)
+  # Absolute: (0.761, 0.048, 0.23)
+  # Relative to LiDAR: (0.761-1.539, 0.048-0.006, 0.23-1.041)
+  imu_link:
+    x: -0.778000     # 0.778m behind LiDAR
+    y: 0.042000      # 0.042m left from LiDAR
+    z: -0.811000     # 0.811m below LiDAR
+    roll: 0.000000
+    pitch: 0.000000
+    yaw: 0.000000
+
+  # GNSS antenna (integrated with IMU unit)
+  gnss_link:
+    x: -0.778000
+    y: 0.042000
+    z: -0.811000
+    roll: 0.000000
+    pitch: 0.000000
+    yaw: 0.000000
+
+  # RADAR SENSOR
+  # Front Radar
+  # Absolute: (3.678, -0.005, -0.08)
+  # Relative to LiDAR: (3.678-1.539, -0.005-0.006, -0.08-1.041)
+  radar_link:
+    x: 2.139000      # 2.139m forward from LiDAR (front bumper area)
+    y: -0.011000     # 0.011m right from LiDAR
+    z: -1.121000     # 1.121m below LiDAR
+    roll: 0.000000
+    pitch: 0.000000
+    yaw: 0.000000

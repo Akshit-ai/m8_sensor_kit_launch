@@ -1,0 +1,56 @@
+<launch>
+  <!-- 
+       imu.launch.xml
+       iNAT M300  →  ixcom_driver_lc  →  imu_corrector  →  gyro_bias_estimator
+ 
+       NOTE: ixcom_driver_lc is already launched by gnss.launch.xml.
+       This file only launches the Autoware IMU processing pipeline.
+ 
+       Topic flow:
+         /ixcom/Imu  (sensor_msgs/Imu, 100 Hz)
+           → imu_corrector  (bias removal)
+           → imu/imu_data   (Autoware contract, inside 'imu' namespace)
+             = /sensing/imu/imu_data when called from sensing.launch.xml
+   -->
+ 
+  <group>
+    <push-ros-namespace namespace="imu"/>
+ 
+    <!-- ── Arguments ─ -->
+ 
+    <!-- Raw IMU topic from ixcom_driver_lc -->
+    <arg name="imu_raw_name"          default="/ixcom/Imu"/>
+ 
+    <!-- Param file with bias correction values for the iNAT M300 -->
+    <arg name="imu_corrector_param_file"
+         default="$(find-pkg-share m8_sensor_kit_launch)/config/imu_corrector.param.yaml"/>
+ 
+    <!--  imu_corrector 
+         Removes gyro/accel bias from raw iNAT M300 IMU data.
+ 
+         Input:  /ixcom/Imu        (raw, from ixcom_driver_lc)
+         Output: imu_data          (→ /sensing/imu/imu_data via namespace)
+     -->
+    <include file="$(find-pkg-share autoware_imu_corrector)/launch/imu_corrector.launch.xml">
+      <arg name="input_topic"              value="$(var imu_raw_name)"/>
+      <arg name="output_topic"             value="imu_data"/>
+      <arg name="param_file"               value="$(var imu_corrector_param_file)"/>
+    </include>
+ 
+    <!-- gyro_bias_estimator 
+         Estimates gyro bias in real time using vehicle odometry.
+         Feeds estimated bias back to imu_corrector automatically.
+ 
+         Requires:
+           - /ixcom/Imu                          (raw IMU)
+           - /localization/kinematic_state        (vehicle odometry from EKF)
+     -->
+    <include file="$(find-pkg-share autoware_imu_corrector)/launch/gyro_bias_estimator.launch.xml">
+      <arg name="input_imu_raw"            value="$(var imu_raw_name)"/>
+      <arg name="input_odom"               value="/localization/kinematic_state"/>
+      <arg name="imu_corrector_param_file" value="$(var imu_corrector_param_file)"/>
+    </include>
+ 
+  </group>
+ 
+</launch>

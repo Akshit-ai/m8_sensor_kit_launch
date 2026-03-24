@@ -1,0 +1,81 @@
+
+<launch>
+  <!-- 
+       camera.launch.xml
+       LUCID TRIP28S cameras  →  lucid driver  →  toros  →  sensor_msgs/Image
+ 
+       Pipeline per camera:
+         lucid (trio28s-cc)
+           → camera/lucid/image/<name>  (OsiStream.msg / CameraSensorView)
+           → toros (camerasensorview)
+           → camera/lucid/image/<name>  (sensor_msgs/Image, Autoware-usable)
+ 
+       Cameras launched 
+         1. innenraum    (serial: 222001393) ← PRIMARY — in URDF, used by Autoware
+         2. dach_links   (serial: 222001392)
+         3. dach_rechts
+         4. hinten
+ 
+       Calibration file (same for all cameras — toros uses it for rectification):
+         /home/datalynx/init_test/ros2_ws/camera_yaml/innenraum.yaml
+ 
+       Note: Only innenraum is defined in the URDF/sensor_kit_calibration.yaml.
+       The other cameras publish image topics independently and can be used
+       for recording/visualization without Autoware perception integration.
+   -->
+ 
+  <arg name="calibration_file"
+       default="file:///home/datalynx/init_test/ros2_ws/camera_yaml/innenraum.yaml"/>
+ 
+  <!--  1. LUCID camera drivers 
+       Each camera has its own node launched via the dedicated launch file.
+       Package: lucid, executable: trio28s-cc
+       Topics published: camera/lucid/image/<name>  (OsiStream.msg)
+   -->
+ 
+  <!-- innenraum — PRIMARY camera (in URDF, serial: 222001393) -->
+  <include file="$(find-pkg-share lucid)/launch/trio28s_innenraum_launch.py"/>
+ 
+  <!-- dach_links (serial: 222001392) -->
+  <include file="$(find-pkg-share lucid)/launch/trio28s_dach_links_launch.py"/>
+ 
+  <!-- dach_rechts -->
+  <include file="$(find-pkg-share lucid)/launch/trio28s_dach_rechts_launch.py"/>
+ 
+  <!-- hinten -->
+  <include file="$(find-pkg-share lucid)/launch/trio28s_hinten_launch.py"/>
+ 
+  <!--  2. toros OSI → ROS2 converters 
+       One toros node per camera.
+       Package: toros, executable: camerasensorview
+       Converts OsiStream.msg (CameraSensorView) → sensor_msgs/Image
+ 
+       Input:  camera/lucid/image/<name>  (OsiStream.msg from lucid driver)
+       Output: camera/lucid/image/<name>  (sensor_msgs/Image, Autoware-ready)
+   -->
+ 
+  <!-- toros converter: innenraum -->
+  <node pkg="toros" exec="camerasensorview" name="toros_innenraum" output="screen">
+    <param name="topic_name"       value="camera/lucid/image/innenraum"/>
+    <param name="calibration_name" value="$(var calibration_file)"/>
+  </node>
+ 
+  <!-- toros converter: dach_links -->
+  <node pkg="toros" exec="camerasensorview" name="toros_dach_links" output="screen">
+    <param name="topic_name"       value="camera/lucid/image/dach_links"/>
+    <param name="calibration_name" value="$(var calibration_file)"/>
+  </node>
+ 
+  <!-- toros converter: dach_rechts -->
+  <node pkg="toros" exec="camerasensorview" name="toros_dach_rechts" output="screen">
+    <param name="topic_name"       value="camera/lucid/image/dach_rechts"/>
+    <param name="calibration_name" value="$(var calibration_file)"/>
+  </node>
+ 
+  <!-- toros converter: hinten -->
+  <node pkg="toros" exec="camerasensorview" name="toros_hinten" output="screen">
+    <param name="topic_name"       value="camera/lucid/image/hinten"/>
+    <param name="calibration_name" value="$(var calibration_file)"/>
+  </node>
+ 
+</launch>

@@ -1,0 +1,13 @@
+# BMW M8 - sensor_kit_base_link position relative to base_link (rear axle)
+#
+# sensor_kit_base_link is co-located with the Ouster OS1-128 LiDAR
+# Absolute position from rear axle: (1.539, 0.006, 1.041)
+
+base_link:
+  sensor_kit_base_link:
+    x: 1.539000
+    y: 0.006000
+    z: 1.041000
+    roll: 0.000000
+    pitch: 0.000000
+    yaw: 0.000000
