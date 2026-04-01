@@ -15,14 +15,14 @@
   <!--  Arguments  -->
 
   <!-- IP address of the iNAT M300 on the vehicle network -->
-  <arg name="inat_ip"         default="192.168.1.30"/>
+  <arg name="inat_ip"         default="10.1.20.10"/>
 
   <!-- ROS2 namespace for ixcom_driver_lc (must match publisher_config.yml) -->
   <arg name="ixcom_namespace" default="ixcom"/>
 
   <!-- NavSatFix topic published by ixcom_driver_lc -->
   <!-- NavSatFix_INS = INS-fused position (more accurate than raw GNSS) -->
-  <arg name="navsatfix_topic" default="/ixcom/NavSatFix_INS"/>
+  <arg name="navsatfix_topic" default="/ixcom/NavSatFix_GNSS"/>
 
   <!-- Orientation topic — iNAT provides orientation via INS -->
   <arg name="orientation_topic" default="/autoware_orientation"/>
