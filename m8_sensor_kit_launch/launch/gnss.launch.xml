@@ -35,7 +35,7 @@
    -->
   <include file="$(find-pkg-share ixcom_driver_lc)/launch/autostart.launch.py">
     <arg name="namespace"             value="$(var ixcom_namespace)"/>
-    <arg name="publisher_config_file" value="$(find-pkg-share m8_sensor_kit_launch)/config/ixcom_publisher_config.yml"/>
+    <arg name="find-pkg-share ixcom_driver_lc)/src/ixcom_driver_lc/params/publisher_config.yml"/>
   </include>
 
   <!-- ── 2. gnss_poser 
