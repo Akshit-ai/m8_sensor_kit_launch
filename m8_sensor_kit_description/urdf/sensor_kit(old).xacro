@@ -1,0 +1,222 @@
+<?xml version="1.0"?>
+<!-- 
+     BMW M8 Sensor Kit XACRO
+     
+     Defines all sensor links and joints relative to sensor_kit_base_link.
+     sensor_kit_base_link is co-located with the Ouster OS1-128 LiDAR.
+
+     Positions are loaded from:
+       config/sensor_kit_calibration.yaml
+
+     Sensors:
+       - Ouster OS1-128 (LiDAR)       → ouster_lidar_base_link
+       - Lucid TRIP28S (Camera)        → camera_lucid_camera_link
+       - iNAT M300 IMU                 → imu_link
+       - iNAT M300 GNSS               → gnss_link
+       - Front Radar                   → radar_link
+      -->
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+
+  <xacro:macro name="sensor_kit_macro" params="parent x y z roll pitch yaw">
+
+    <!-- 
+         SENSOR KIT BASE LINK
+         Parent: base_link (rear axle)
+         Position: loaded from sensors_calibration.yaml by sensors.xacro
+          -->
+    <xacro:property name="sensor_kit_base_link" value="sensor_kit_base_link"/>
+
+    <joint name="${sensor_kit_base_link}_joint" type="fixed">
+      <origin rpy="${roll} ${pitch} ${yaw}" xyz="${x} ${y} ${z}"/>
+      <parent link="${parent}"/>
+      <child link="${sensor_kit_base_link}"/>
+    </joint>
+
+    <link name="${sensor_kit_base_link}">
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+    </link>
+
+    <!-- Load sensor-to-sensor-kit calibration -->
+    <xacro:property name="calibration"
+      value="${xacro.load_yaml('$(find m8_sensor_kit_description)/config/sensor_kit_calibration.yaml')}"/>
+
+    <!-- 
+         LIDAR - Ouster OS1-128
+         Gray cylinder representing the Ouster puck
+          -->
+    <link name="ouster_lidar_base_link">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <cylinder radius="0.05" length="0.07"/>
+        </geometry>
+        <material name="lidar_grey">
+          <color rgba="0.5 0.5 0.5 1.0"/>
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <cylinder radius="0.05" length="0.07"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <joint name="ouster_lidar_joint" type="fixed">
+      <origin
+        xyz="${calibration['sensor_kit_base_link']['ouster_lidar_base_link']['x']}
+             ${calibration['sensor_kit_base_link']['ouster_lidar_base_link']['y']}
+             ${calibration['sensor_kit_base_link']['ouster_lidar_base_link']['z']}"
+        rpy="${calibration['sensor_kit_base_link']['ouster_lidar_base_link']['roll']}
+             ${calibration['sensor_kit_base_link']['ouster_lidar_base_link']['pitch']}
+             ${calibration['sensor_kit_base_link']['ouster_lidar_base_link']['yaw']}"/>
+      <parent link="sensor_kit_base_link"/>
+      <child link="ouster_lidar_base_link"/>
+    </joint>
+
+    <!-- 
+         CAMERA - Lucid TRIP28S (innenraum)
+         Note: link name uses underscore, NOT slash (URDF requirement)
+          -->
+    <link name="camera_lucid_camera_link">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <box size="0.05 0.05 0.05"/>
+        </geometry>
+        <material name="camera_black">
+          <color rgba="0.1 0.1 0.1 1.0"/>
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <box size="0.05 0.05 0.05"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <joint name="camera_lucid_joint" type="fixed">
+      <origin
+        xyz="${calibration['sensor_kit_base_link']['camera_lucid_camera_link']['x']}
+             ${calibration['sensor_kit_base_link']['camera_lucid_camera_link']['y']}
+             ${calibration['sensor_kit_base_link']['camera_lucid_camera_link']['z']}"
+        rpy="${calibration['sensor_kit_base_link']['camera_lucid_camera_link']['roll']}
+             ${calibration['sensor_kit_base_link']['camera_lucid_camera_link']['pitch']}
+             ${calibration['sensor_kit_base_link']['camera_lucid_camera_link']['yaw']}"/>
+      <parent link="sensor_kit_base_link"/>
+      <child link="camera_lucid_camera_link"/>
+    </joint>
+
+    <!-- Camera optical frame: rotated -90° around Y then -90° around Z
+         This converts from ROS camera convention (Z forward) to optical convention (Z into scene) -->
+    <link name="camera_lucid_camera_optical_link"/>
+
+    <joint name="camera_lucid_optical_joint" type="fixed">
+      <origin xyz="0 0 0" rpy="0 -1.5708 -1.5708"/>
+      <parent link="camera_lucid_camera_link"/>
+      <child link="camera_lucid_camera_optical_link"/>
+    </joint>
+
+    <!-- 
+         IMU - iNAT M300
+          -->
+    <link name="imu_link">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <box size="0.03 0.03 0.02"/>
+        </geometry>
+        <material name="imu_blue">
+          <color rgba="0.2 0.2 0.8 1.0"/>
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <box size="0.03 0.03 0.02"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <joint name="imu_joint" type="fixed">
+      <origin
+        xyz="${calibration['sensor_kit_base_link']['imu_link']['x']}
+             ${calibration['sensor_kit_base_link']['imu_link']['y']}
+             ${calibration['sensor_kit_base_link']['imu_link']['z']}"
+        rpy="${calibration['sensor_kit_base_link']['imu_link']['roll']}
+             ${calibration['sensor_kit_base_link']['imu_link']['pitch']}
+             ${calibration['sensor_kit_base_link']['imu_link']['yaw']}"/>
+      <parent link="sensor_kit_base_link"/>
+      <child link="imu_link"/>
+    </joint>
+
+    <!-- 
+         GNSS - iNAT M300 (integrated with IMU)
+          -->
+    <link name="gnss_link">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <box size="0.10 0.10 0.05"/>
+        </geometry>
+        <material name="gnss_white">
+          <color rgba="0.9 0.9 0.9 1.0"/>
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <box size="0.10 0.10 0.05"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <joint name="gnss_joint" type="fixed">
+      <origin
+        xyz="${calibration['sensor_kit_base_link']['gnss_link']['x']}
+             ${calibration['sensor_kit_base_link']['gnss_link']['y']}
+             ${calibration['sensor_kit_base_link']['gnss_link']['z']}"
+        rpy="${calibration['sensor_kit_base_link']['gnss_link']['roll']}
+             ${calibration['sensor_kit_base_link']['gnss_link']['pitch']}
+             ${calibration['sensor_kit_base_link']['gnss_link']['yaw']}"/>
+      <parent link="sensor_kit_base_link"/>
+      <child link="gnss_link"/>
+    </joint>
+
+    <!-- 
+         RADAR - Front bumper
+          -->
+    <link name="radar_link">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <box size="0.08 0.12 0.04"/>
+        </geometry>
+        <material name="radar_red">
+          <color rgba="0.8 0.2 0.2 1.0"/>
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <box size="0.08 0.12 0.04"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <joint name="radar_joint" type="fixed">
+      <origin
+        xyz="${calibration['sensor_kit_base_link']['radar_link']['x']}
+             ${calibration['sensor_kit_base_link']['radar_link']['y']}
+             ${calibration['sensor_kit_base_link']['radar_link']['z']}"
+        rpy="${calibration['sensor_kit_base_link']['radar_link']['roll']}
+             ${calibration['sensor_kit_base_link']['radar_link']['pitch']}
+             ${calibration['sensor_kit_base_link']['radar_link']['yaw']}"/>
+      <parent link="sensor_kit_base_link"/>
+      <child link="radar_link"/>
+    </joint>
+
+  </xacro:macro>
+
+</robot>

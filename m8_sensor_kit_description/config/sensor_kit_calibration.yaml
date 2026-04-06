@@ -1,9 +1,6 @@
 # BMW M8 Sensor Kit Calibration - Real World
-#
 # Defines individual sensor positions relative to sensor_kit_base_link (LiDAR)
-#
 # All positions calculated as: sensor_position - LiDAR_position
-#
 # Absolute positions from rear axle (base_link):
 #   LiDAR:  (1.539, 0.006, 1.041)
 #   Camera: (1.706, -0.016, 0.752)
@@ -34,6 +31,24 @@ sensor_kit_base_link:
     pitch: 0.000000
     yaw: 0.000000
     
+   # Camera Vorne rechts front Right
+  camera_vorne_rechts_link:
+    x: 0.000000
+    y: 0.000000
+    z: 0.000000
+    roll: 0.000000
+    pitch: 0.000000
+    yaw: 0.000000
+    
+   #Camera Vorne Links  
+  camera_vorne_links_link:
+    x: 0.000000
+    y: 0.000000
+    z: 0.000000
+    roll: 0.000000
+    pitch: 0.000000
+    yaw: 0.000000
+    
     # Camera - dach_links (roof left) 
   camera_dach_links_link:
     x: 0.000000
@@ -52,7 +67,7 @@ sensor_kit_base_link:
     pitch: 0.000000
     yaw: 0.000000
     
-     # Camera - hinten (rear) - PLACEHOLDER pending calibration
+     # Camera - hinten (rear)
   camera_hinten_link:
     x: 0.000000
     y: 0.000000
@@ -60,6 +75,24 @@ sensor_kit_base_link:
     roll: 0.000000
     pitch: 0.000000
     yaw: 0.000000
+    
+  camera_totwinkel_rechts_link:
+    x: 0.000000
+    y: 0.000000
+    z: 0.000000
+    roll: 0.000000
+    pitch: 0.000000
+    yaw: 0.000000
+
+  camera_totwinkel_links_link:
+    x: 0.000000
+    y: 0.000000
+    z: 0.000000
+    roll: 0.000000
+    pitch: 0.000000
+    yaw: 0.000000
+    
+   
 
   # GNSS/IMU SENSOR
   # iNAT M300 (integrated IMU + GNSS unit)
