@@ -1,75 +1,25 @@
 <launch>
-  <!-- 
-       gnss.launch.xml
-       iNAT M300  →  ixcom_driver_lc  →  gnss_poser
-
-       Topic flow:
-         /ixcom/NavSatFix_INS  (sensor_msgs/NavSatFix, 10 Hz)
-           → gnss_poser
-           → /sensing/gnss/pose_with_covariance  (Autoware contract)
-
-       NOTE: ixcom_driver_lc also publishes /ixcom/Imu used by imu.launch.xml.
-       The driver is launched here once — imu.launch.xml does NOT re-launch it.
-   -->
-
-  <!--  Arguments  -->
-
-  <!-- IP address of the iNAT M300 on the vehicle network -->
-  <arg name="inat_ip"         default="10.1.20.10"/>
-
-  <!-- ROS2 namespace for ixcom_driver_lc (must match publisher_config.yml) -->
+  <arg name="launch_driver" default="true"/>
+  <arg name="inat_ip" default="10.1.20.10"/>
   <arg name="ixcom_namespace" default="ixcom"/>
-
-  <!-- NavSatFix topic published by ixcom_driver_lc -->
-  <!-- NavSatFix_INS = INS-fused position (more accurate than raw GNSS) -->
   <arg name="navsatfix_topic" default="/ixcom/NavSatFix_GNSS"/>
-
-  <!-- Orientation topic — iNAT provides orientation via INS -->
   <arg name="orientation_topic" default="/autoware_orientation"/>
 
-  <!--  1. ixcom_driver_lc 
-       Official iMAR ROS2 driver for the iNAT M300.
-       Topics enabled/disabled in ixcom_publisher_config.yml:
-         - /ixcom/Imu          at 100 Hz  (for imu.launch.xml)
-         - /ixcom/NavSatFix_INS at 10 Hz  (for gnss_poser below)
-   -->
   <include file="$(find-pkg-share ixcom_driver_lc)/launch/autostart.launch.py">
-    <arg name="namespace"             value="$(var ixcom_namespace)"/>
-    <arg name="find-pkg-share ixcom_driver_lc)/src/ixcom_driver_lc/params/publisher_config.yml"/>
+    <arg name="namespace" value="$(var ixcom_namespace)"/>
+    <arg name="config_file" value="$(find-pkg-share ixcom_driver_lc)/src/ixcom_driver_lc/params/publisher_config.yml"/>
   </include>
 
-  <!-- ── 2. gnss_poser 
-       Converts NavSatFix → PoseWithCovarianceStamped using MGRS projection.
-       Runs inside the 'gnss' namespace (set by the default gnss.launch.xml).
-
-       Output topics (relative to /sensing/gnss/):
-         pose_with_covariance  ← consumed by Autoware EKF localizer
-         pose                  ← raw pose without covariance
-         fixed                 ← whether GNSS fix is valid
-  ─ -->
   <group>
     <push-ros-namespace namespace="sensing/gnss"/>
-
     <include file="$(find-pkg-share autoware_gnss_poser)/launch/gnss_poser.launch.xml">
-
-      <!-- Input: NavSatFix from ixcom driver -->
       <arg name="input_topic_fix"         value="$(var navsatfix_topic)"/>
-
-      <!-- Input: orientation from INS (iNAT provides this internally) -->
       <arg name="input_topic_orientation" value="$(var orientation_topic)"/>
-
-      <!-- Output topics (relative to current namespace /sensing/gnss/) -->
       <arg name="output_topic_gnss_pose"     value="pose"/>
       <arg name="output_topic_gnss_pose_cov" value="pose_with_covariance"/>
       <arg name="output_topic_gnss_fixed"    value="fixed"/>
-
-      <!-- Use INS-fused orientation from iNAT (true = better accuracy) -->
       <arg name="use_gnss_ins_orientation"   value="true"/>
-
-      <!-- GNSS sensor frame — must match sensor_kit_calibration.yaml -->
       <arg name="gnss_frame" value="gnss_link"/>
-
     </include>
   </group>
-
 </launch>

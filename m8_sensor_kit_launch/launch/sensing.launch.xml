@@ -1,15 +1,15 @@
 <launch>
   <!-- 
        Launches all sensor drivers and their Autoware pipelines:
-         1. LiDAR    → lidar.launch.xml   (Ouster OS1-128)
-         2. Camera   → camera.launch.xml  (Lucid TRIP28S x4 + toros)
-         3. IMU      → imu.launch.xml     (iNAT M300 → imu_corrector)
-         4. GNSS     → gnss.launch.xml    (iNAT M300 → gnss_poser)
+         1. LiDAR    -> lidar.launch.xml   (Ouster OS1-128)
+         2. Camera   -> camera.launch.xml  (Lucid TRIP28S x4 + toros)
+         3. IMU      -> imu.launch.xml     (iNAT M300 -> imu_corrector)
+         4. GNSS     -> gnss.launch.xml    (iNAT M300 -> gnss_poser)
          5. Vehicle velocity converter    (for gyro_bias_estimator)
  
        NOTE: ixcom_driver_lc is launched inside gnss.launch.xml.
        It publishes both /ixcom/NavSatFix_INS (GNSS) and /ixcom/Imu (IMU).
-       imu.launch.xml consumes the IMU topic — no separate driver needed.
+       imu.launch.xml consumes the IMU topic - no separate driver needed.
    -->
  
   <!--  Arguments  -->
@@ -24,7 +24,7 @@
   <group>
  
     <!--  LiDAR Driver 
-         Ouster OS1-128 → ouster_ros → pointcloud_preprocessor
+         Ouster OS1-128 -> ouster_ros -> pointcloud_preprocessor
          Output: /sensing/lidar/top/pointcloud
      -->
     <include file="$(find-pkg-share m8_sensor_kit_launch)/launch/lidar.launch.xml">
@@ -32,7 +32,7 @@
     </include>
  
     <!--  Camera Driver 
-         Lucid TRIP28S (x4) → lucid driver → toros → sensor_msgs/Image
+         Lucid TRIP28S (x4) -> lucid driver -> toros -> sensor_msgs/Image
          Cameras: innenraum, dach_links, dach_rechts, hinten
      -->
     <include file="$(find-pkg-share m8_sensor_kit_launch)/launch/camera.launch.xml">
@@ -40,7 +40,7 @@
     </include>
  
     <!-- ── IMU Driver 
-         /ixcom/Imu → imu_corrector → /sensing/imu/imu_data
+         /ixcom/Imu -> imu_corrector -> /sensing/imu/imu_data
          NOTE: ixcom_driver_lc already launched by gnss.launch.xml
     -->
      <include file="$(find-pkg-share m8_sensor_kit_launch)/launch/imu.launch.xml">
@@ -49,14 +49,14 @@
  
     <!--  GNSS Driver 
          Launches ixcom_driver_lc + gnss_poser
-         /ixcom/NavSatFix_INS → gnss_poser → /sensing/gnss/pose_with_covariance
+         /ixcom/NavSatFix_INS -> gnss_poser -> /sensing/gnss/pose_with_covariance
      -->
     <include file="$(find-pkg-share m8_sensor_kit_launch)/launch/gnss.launch.xml">
       <arg name="launch_driver" value="$(var launch_driver)"/>
     </include>
  
     <!--  Vehicle Velocity Converter 
-         Converts VelocityReport → TwistWithCovarianceStamped
+         Converts VelocityReport -> TwistWithCovarianceStamped
          Required by gyro_bias_estimator (launched inside imu.launch.xml)
  
          Input:  /vehicle/status/velocity_status

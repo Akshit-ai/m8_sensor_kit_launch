@@ -1,14 +1,14 @@
 <launch>
   <!-- 
        lidar.launch.xml
-       Ouster OS1-128  →  ouster_ros driver  →  pointcloud_preprocessor
+       Ouster OS1-128  ->  ouster_ros driver  ->  pointcloud_preprocessor
 
        Topic flow:
          ouster_ros driver
-           → /ouster/points  (sensor_msgs/PointCloud2, frame: ouster_top)
-           → remapped to /sensing/lidar/top/pointcloud_raw
-           → pointcloud_preprocessor.launch.py
-           → /sensing/lidar/top/pointcloud  (Autoware contract)
+           -> /ouster/points  (sensor_msgs/PointCloud2, frame: ouster_top)
+           -> remapped to /sensing/lidar/top/pointcloud_raw
+           -> pointcloud_preprocessor.launch.py
+           -> /sensing/lidar/top/pointcloud  (Autoware contract)
 
        Key lessons from Autoware community (github.com/autowarefoundation/
        autoware_universe/issues/4978):
@@ -22,7 +22,7 @@
   <!-- Ouster sensor IP on vehicle network (from driver_config.yaml) -->
   <arg name="ouster_ip"       default="10.1.14.10"/>
 
-  <!-- LiDAR frame ID — MUST match ouster_lidar_base_link in calibration yaml
+  <!-- LiDAR frame ID - MUST match ouster_lidar_base_link in calibration yaml
        and MUST match what pointcloud_preprocessor expects -->
   <arg name="lidar_frame_id"  default="ouster_top"/>
 
@@ -52,7 +52,7 @@
       <!-- Scan resolution and rate -->
       <param name="lidar_mode"           value="$(var lidar_mode)"/>
 
-      <!-- Frame IDs — must match URDF/calibration -->
+      <!-- Frame IDs - must match URDF/calibration -->
       <param name="sensor_frame"         value="os_sensor"/>
       <param name="lidar_frame"          value="$(var lidar_frame_id)"/>
       <param name="imu_frame"            value="os_imu"/>
@@ -62,7 +62,7 @@
       <param name="timestamp_mode"       value="$(var timestamp_mode)"/>
       <param name="ptp_utc_tai_offset"   value="-37.0"/>
 
-      <!-- Only enable pointcloud (PCL) — IMU handled by iNAT M300 -->
+      <!-- Only enable pointcloud (PCL) - IMU handled by iNAT M300 -->
       <param name="proc_mask"            value="PCL"/>
 
       <!-- QoS: system default needed for rosbag compatibility -->
@@ -85,8 +85,8 @@
   </group>
 
   <!-- ── pointcloud_preprocessor 
-       5-stage pipeline: crop → distortion correct → outlier filter
-       → downsample → transform to base_link
+       5-stage pipeline: crop -> distortion correct -> outlier filter
+       -> downsample -> transform to base_link
 
        Input:  /sensing/lidar/top/pointcloud_raw
        Output: /sensing/lidar/top/pointcloud  (Autoware contract)

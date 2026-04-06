@@ -1,15 +1,15 @@
 <launch>
   <!-- 
        imu.launch.xml
-       iNAT M300  →  ixcom_driver_lc  →  imu_corrector  →  gyro_bias_estimator
+       iNAT M300  ->  ixcom_driver_lc  ->  imu_corrector  ->  gyro_bias_estimator
  
        NOTE: ixcom_driver_lc is already launched by gnss.launch.xml.
        This file only launches the Autoware IMU processing pipeline.
  
        Topic flow:
          /ixcom/Imu  (sensor_msgs/Imu, 100 Hz)
-           → imu_corrector  (bias removal)
-           → imu/imu_data   (Autoware contract, inside 'imu' namespace)
+           -> imu_corrector  (bias removal)
+           -> imu/imu_data   (Autoware contract, inside 'imu' namespace)
              = /sensing/imu/imu_data when called from sensing.launch.xml
    -->
  
@@ -29,7 +29,7 @@
          Removes gyro/accel bias from raw iNAT M300 IMU data.
  
          Input:  /ixcom/Imu        (raw, from ixcom_driver_lc)
-         Output: imu_data          (→ /sensing/imu/imu_data via namespace)
+         Output: imu_data          (-> /sensing/imu/imu_data via namespace)
      -->
     <include file="$(find-pkg-share autoware_imu_corrector)/launch/imu_corrector.launch.xml">
       <arg name="input_topic"              value="$(var imu_raw_name)"/>
