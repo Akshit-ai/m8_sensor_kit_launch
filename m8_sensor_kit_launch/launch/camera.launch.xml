@@ -25,7 +25,7 @@
    -->
  
   <arg name="calibration_file"
-       default="file:///home/datalynx/init_test/ros2_ws/camera_yaml/innenraum.yaml"/>
+       default="file:///autoware_data/sensor_calibration/camera_yaml/innenraum.yaml"/>
  
   <!--  1. LUCID camera drivers 
        Each camera has its own node launched via the dedicated launch file.
@@ -34,16 +34,16 @@
    -->
  
   <!-- innenraum - PRIMARY camera (in URDF, serial: 222001393) -->
-  <include file="$(find-pkg-share lucid)/launch/trio28s_innenraum_launch.py"/>
+  <include file="$(find-pkg-share lucid)/launch/tri028s_innenraum_launch.py"/>
  
   <!-- dach_links (serial: 222001392) -->
-  <include file="$(find-pkg-share lucid)/launch/trio28s_dach_links_launch.py"/>
+  <include file="$(find-pkg-share lucid)/launch/tri028s_dach_links_launch.py"/>
  
   <!-- dach_rechts -->
-  <include file="$(find-pkg-share lucid)/launch/trio28s_dach_rechts_launch.py"/>
+  <include file="$(find-pkg-share lucid)/launch/tri028s_dach_rechts_launch.py"/>
  
   <!-- hinten -->
-  <include file="$(find-pkg-share lucid)/launch/trio28s_hinten_launch.py"/>
+  <include file="$(find-pkg-share lucid)/launch/tri028s_hinten_launch.py"/>
  
   <!--  2. toros OSI -> ROS2 converters 
        One toros node per camera.
@@ -69,7 +69,7 @@
   <!-- toros converter: dach_rechts -->
   <node pkg="toros" exec="camerasensorview" name="toros_dach_rechts" output="screen">
     <param name="topic_name"       value="camera/lucid/image/dach_rechts"/>
-    <param name="calibration_name" value="$(var calibration_file)"/>
+    <param name="calibration_name" value="file:///autoware_data/sensor_calibration/camera_yaml/dach_rechts.yaml"/>
   </node>
  
   <!-- toros converter: hinten -->
